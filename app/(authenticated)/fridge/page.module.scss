@@ -26,6 +26,7 @@
 
         .ingredientSummary {
             display: flex;
+
             .icon {
                 position: relative;
                 font-size: 2rem;
@@ -33,6 +34,7 @@
                 padding: 8px;
                 margin-right: 1.5rem;
                 border-radius: 20%;
+
                 .quantity {
                     position: absolute;
                     top: -20%;
@@ -58,18 +60,19 @@
                     font-size: 1.3rem;
                     font-weight: bold;
                     color: var.$text-main;
-                    span{
+
+                    span {
                         margin-left: .5rem;
                         font-size: .8rem;
                         color: var.$text-muted;
                     }
                 }
-    
+
                 .expiration {
                     font-size: 0.8rem;
                     color: var.$text-muted;
                 }
-    
+
                 // &.urgent {
                 //     .expiration {
                 //         color: var.$danger; // 期限が近い場合の色
@@ -81,6 +84,7 @@
     }
 }
 
+// 右下のプラスボタン
 .addButton {
     position: fixed;
     bottom: 100px;
@@ -99,10 +103,102 @@
     justify-content: center;
     cursor: pointer;
     transition: 0.2s;
-  
+
     &:hover {
-      background-color: darken(#f7b64e, 10%);
-      transform: scale(1.1);
+        background-color: darken(#f7b64e, 10%);
+        transform: scale(1.1);
     }
-  }
-  
+}
+
+.bottomLine {
+    width: 100%;
+    position: fixed;
+    bottom: 100px;
+
+    // ボタンの基本スタイル
+    .addButton {
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        background-color: #f7b64e;
+        color: white;
+        font-size: 2rem;
+        font-weight: bold;
+        font-family: monospace;
+        border: none;
+        border-radius: 50%;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.3s ease-in-out;
+        transform: rotate(0deg);
+
+        &:hover {
+            background-color: darken(#f7b64e, 10%);
+            transform: scale(1.1);
+        }
+
+        // メニューが開いているときのボタンの見た目
+        &.open {
+            background-color: #e48c29; // ちょっと濃いオレンジ
+            transform: rotate(180deg); // くるっと回転
+
+            &:hover {
+                background-color: darken(#e48c29, 10%);
+            }
+        }
+    }
+
+
+    // ポップアップメニューの位置
+    .menuWrapper {
+        margin-left: auto;
+        width: calc(100% - 100px - 25px);
+        position: relative;
+        bottom: 0;
+        right: 100px;
+        transform: translate(50px, 12.5px) scale(0.5);
+        opacity: 0;
+        transition: transform 0.7s var.$easeInQuad, opacity 0.7s var.$easeInQuad;
+        pointer-events: none;
+
+        // メニューを開いたときのスタイル
+        &.show {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+
+    // メニューのコンテナ
+    .menu {
+        // background: white;
+        // padding: 12px;
+        // border-radius: 10px;
+        // box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    // メニューのボタン
+    .menuItem {
+        background: #f7b64e;
+        color: white;
+        font-size: 1.2rem;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &:hover {
+            background: darken(#f7b64e, 10%);
+        }
+    }
+}

@@ -1,6 +1,6 @@
 /* styles/_variables.scss */
 $main: #f7b64e;
-$background: #fff8e7;
+$background: #fbf9f5;
 $text-main: #171717;
 $text-muted: #757575;
 $link: #f7b64e;
@@ -10,3 +10,5 @@ $white: #fff;
 $gray: #ddd;
 $danger: #ff0000;
 $black: #000;
+
+$easeInQuad: cubic-bezier(.13,0,.17,1)

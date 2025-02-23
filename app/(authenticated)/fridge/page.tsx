@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Fridge from "@/components/Fridge";
 import styles from "./page.module.scss";
 
@@ -42,6 +42,7 @@ const ingredients = [
   },
 ];
 
+
 export default function Home() {
   // フィルター用の文字列
   const [filter, setFilter] = useState("");
@@ -71,6 +72,33 @@ export default function Home() {
   const toggleSort = () => {
     setSortAscending((prev) => !prev);
   };
+
+  // ポップアップの開閉
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // 枠外クリックで閉じる処理
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current !== event.target // ← ボタンのクリックは無視！
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
 
   return (
     <>
@@ -128,9 +156,29 @@ export default function Home() {
             </li>
           ))}
         </ul>
-        <button className={styles.addButton} onClick={() => alert("登録画面へ")}>
-          +
-        </button>
+
+        <div className={styles.bottomLine}>
+          {/* 右下のボタン（＋ → ー 切り替え） */}
+          <button
+            ref={buttonRef} // ボタンを独立させる
+            className={`${styles.addButton} ${menuOpen ? styles.open : ""}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? "－" : "＋"}
+          </button>
+
+          {/* ポップアップメニュー */}
+          <div ref={menuRef} className={`${styles.menuWrapper} ${menuOpen ? styles.show : ""}`}>
+            <div className={styles.menu}>
+              <button onClick={() => alert("食材を登録")} className={styles.menuItem}>
+                🍽️ 食材を登録
+              </button>
+              <button onClick={() => alert("使った食材を記録")} className={styles.menuItem}>
+                ✍️ 使った食材を記録
+              </button>
+            </div>
+          </div>
+        </div>
       </main>
     </>
   );
