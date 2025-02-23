@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { Zen_Maru_Gothic } from "next/font/google";
+import { Zen_Maru_Gothic, Noto_Emoji } from "next/font/google";
 import "../styles/globals.scss";
 
+const Emoji = Noto_Emoji({
+  weight: ["400"],
+  subsets: ["emoji"],
+})
+
 const Main_Font = Zen_Maru_Gothic({
-  weight: ["400", "500", "700"],
+  weight: ["400"],
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
