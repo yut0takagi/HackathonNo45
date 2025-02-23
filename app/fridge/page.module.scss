@@ -56,11 +56,17 @@
                 .name {
                     font-size: 1.3rem;
                     font-weight: bold;
+                    color: var.$text-main;
+                    span{
+                        margin-left: .5rem;
+                        font-size: .8rem;
+                        color: var.$text-muted;
+                    }
                 }
     
                 .expiration {
                     font-size: 0.8rem;
-                    color: var.$text-main;
+                    color: var.$text-muted;
                 }
     
                 &.urgent {

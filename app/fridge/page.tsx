@@ -9,6 +9,7 @@ const ingredients = [
   {
     id: "1",
     name: "ブロッコリー",
+    genre: "野菜",
     icon: "🥦",
     quantity: 3,
     nearestExpiration: "2025/03/20",
@@ -20,6 +21,7 @@ const ingredients = [
   {
     id: "2",
     name: "トマト",
+    genre: "野菜",
     icon: "🍅",
     quantity: 5,
     nearestExpiration: "2025/03/15",
@@ -31,6 +33,7 @@ const ingredients = [
   {
     id: "3",
     name: "ニンジン",
+    genre: "野菜",
     icon: "🥕",
     quantity: 2,
     nearestExpiration: "2025/03/10",
@@ -106,7 +109,7 @@ export default function Home() {
                   <span className={styles.quantity}>{ingredient.quantity}</span>
                 </span>
                 <div className={styles.details}>
-                  <h2 className={styles.name}>{ingredient.name}</h2>
+                  <h2 className={styles.name}>{ingredient.name}<span>#{ingredient.genre}</span></h2>
                   <span className={styles.expiration}>
                     一番近い期限: {ingredient.nearestExpiration}
                   </span>
