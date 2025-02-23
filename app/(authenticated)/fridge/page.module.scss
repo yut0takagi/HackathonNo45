@@ -2,10 +2,11 @@
 
 .ingredientList {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
+    border: auto;
     padding: 20px;
-    border-radius: 15px;
 
     .ingredientItem {
         width: 100%;
@@ -69,12 +70,12 @@
                     color: var.$text-muted;
                 }
     
-                &.urgent {
-                    .expiration {
-                        color: var.$danger; // 期限が近い場合の色
-                        font-weight: bold;
-                    }
-                }
+                // &.urgent {
+                //     .expiration {
+                //         color: var.$danger; // 期限が近い場合の色
+                //         font-weight: bold;
+                //     }
+                // }
             }
         }
     }
