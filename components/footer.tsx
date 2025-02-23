@@ -1,10 +1,9 @@
-import styles from "./footer";
-
+import styles from "./footer.module.scss";
 const Footer = () => {
     return (
         <>
             {/* フッターメニュー */}
-            <footer className={styles.footerMenu}>
+            <footer className={styles.footer}>
                 <nav>
                     <ul className={styles.navList}>
                         <li className={styles.navItem}>
