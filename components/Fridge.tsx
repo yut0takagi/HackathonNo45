@@ -1,4 +1,4 @@
-import styles from "./fridge.module.scss";
+import styles from "./Fridge.module.scss";
 
 export type FridgeProps = {
     height?: number
