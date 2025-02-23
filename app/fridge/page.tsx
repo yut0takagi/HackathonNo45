@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react";
-import Footer from "@/components /footer";
+import Footer from '@/components/footer'
+import Fridge from "@/components/fridge";
 import styles from "./page.module.scss";
 
 // サンプルの食材データ
@@ -71,58 +72,58 @@ export default function Home() {
 
   return (
     <>
-    <main className={styles.main}>
-      {/* 冷蔵庫のイラスト */}
-      <div className={styles.fridge}>
-        <p>私の冷蔵庫</p>
-      </div>
-      {/* リストのトップ（フィルター＆ソートアイコン表示） */}
-      <div className={styles.listHeader}>
-        <input
-          type="text"
-          placeholder="フィルタを入力"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className={styles.filterInput}
-        />
-        {/* ソートアイコン（クリックで昇順・降順を切替） */}
-        <button onClick={toggleSort} className={styles.sortButton}>
-          {sortAscending ? "▲" : "▼"}
-        </button>
-      </div>
+      <main className={styles.main}>
+        {/* 冷蔵庫のイラスト */}
+        <Fridge height={300} width={210}>
+          <p>私の冷蔵庫</p>
+        </Fridge>
+        {/* リストのトップ（フィルター＆ソートアイコン表示） */}
+        <div className={styles.listHeader}>
+          <input
+            type="text"
+            placeholder="フィルタを入力"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className={styles.filterInput}
+          />
+          {/* ソートアイコン（クリックで昇順・降順を切替） */}
+          <button onClick={toggleSort} className={styles.sortButton}>
+            {sortAscending ? "▲" : "▼"}
+          </button>
+        </div>
 
-      {/* リスト一覧 */}
-      <ul className={styles.ingredientList}>
-        {sortedIngredients.map((ingredient) => (
-          <li
-            key={ingredient.id}
-            className={styles.ingredientItem}
-            onClick={() => toggleDetails(ingredient.id)}
-          >
-            <div className={styles.ingredientSummary}>
-              <span className={styles.icon}>{ingredient.icon}</span>
-              <span className={styles.name}>{ingredient.name}</span>
-              <span className={styles.quantity}>数量: {ingredient.quantity}</span>
-              <span className={styles.expiration}>
-                賞味期限: {ingredient.nearestExpiration}
-              </span>
-            </div>
-            {/* 詳細表示（タッチ時に展開） */}
-            {expandedIds.includes(ingredient.id) && (
-              <div className={styles.ingredientDetails}>
-                {ingredient.details.map((detail) => (
-                  <div key={detail.id} className={styles.detailItem}>
-                    <span>賞味期限: {detail.expiration}</span>
-                    <span>個数: {detail.quantity}</span>
-                  </div>
-                ))}
+        {/* リスト一覧 */}
+        <ul className={styles.ingredientList}>
+          {sortedIngredients.map((ingredient) => (
+            <li
+              key={ingredient.id}
+              className={styles.ingredientItem}
+              onClick={() => toggleDetails(ingredient.id)}
+            >
+              <div className={styles.ingredientSummary}>
+                <span className={styles.icon}>{ingredient.icon}</span>
+                <span className={styles.name}>{ingredient.name}</span>
+                <span className={styles.quantity}>数量: {ingredient.quantity}</span>
+                <span className={styles.expiration}>
+                  賞味期限: {ingredient.nearestExpiration}
+                </span>
               </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </main>
-    <Footer></Footer>
+              {/* 詳細表示（タッチ時に展開） */}
+              {expandedIds.includes(ingredient.id) && (
+                <div className={styles.ingredientDetails}>
+                  {ingredient.details.map((detail) => (
+                    <div key={detail.id} className={styles.detailItem}>
+                      <span>賞味期限: {detail.expiration}</span>
+                      <span>個数: {detail.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </main>
+      <Footer></Footer>
     </>
   );
 }

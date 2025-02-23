@@ -1,4 +1,9 @@
+import Link from 'next/link'
+
+import Fridge from "@/components/fridge";
+
 import styles from "./page.module.scss";
+import form from "@/components/form.module.scss"
 
 export default function Home() {
   return (
@@ -9,14 +14,17 @@ export default function Home() {
         <p>あなたの冷蔵庫を賢く管理🥕</p>
       </section>
       {/* ログインフォーム */}
-      <section className={styles.form}>
-        <h2>ログイン</h2>
-        <form action="/api/login" method="POST">
-          <input type="email" name="email" placeholder="メールアドレス" />
-          <input type="password" name="password" placeholder="パスワード" />
-          <button type="submit">ログイン</button>
-        </form>
-        <p>新規登録は<a href="/register">こちら</a></p>
+      <section className={form.form}>
+        <Fridge>
+          <h2>ログイン</h2>
+          {/* <form action="/api/login" method="POST"> */}
+          <form action="/fridge" method="POST">
+            <input type="email" name="email" placeholder="メールアドレス" />
+            <input type="password" name="password" placeholder="パスワード" />
+            <button type="submit">ログイン</button>
+          </form>
+          <p>新規登録は<Link href="/register">こちら</Link></p>
+        </Fridge>
       </section>
     </main>
   );
