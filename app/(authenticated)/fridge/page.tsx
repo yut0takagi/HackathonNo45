@@ -1,6 +1,5 @@
 "use client"
 import { useState } from "react";
-import Footer from '@/components/Footer'
 import Fridge from "@/components/Fridge";
 import styles from "./page.module.scss";
 
@@ -123,7 +122,6 @@ export default function Home() {
           ))}
         </ul>
       </main>
-      <Footer></Footer>
     </>
   );
 }
