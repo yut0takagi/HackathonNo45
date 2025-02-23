@@ -128,6 +128,9 @@ export default function Home() {
             </li>
           ))}
         </ul>
+        <button className={styles.addButton} onClick={() => alert("登録画面へ")}>
+          +
+        </button>
       </main>
     </>
   );
