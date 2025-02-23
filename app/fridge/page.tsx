@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
-import Footer from '@/components/footer'
-import Fridge from "@/components/fridge";
+import Footer from '@/components/Footer'
+import Fridge from "@/components/Fridge";
 import styles from "./page.module.scss";
 
 // サンプルの食材データ

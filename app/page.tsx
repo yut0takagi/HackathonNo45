@@ -1,9 +1,9 @@
 import Link from 'next/link'
 
-import Fridge from "@/components/fridge";
+import Fridge from "@/components/Fridge";
 
 import styles from "./page.module.scss";
-import form from "@/components/form.module.scss"
+import form from "@/components/Form.module.scss"
 
 export default function Home() {
   return (
