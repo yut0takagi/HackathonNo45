@@ -8,12 +8,6 @@ import form from "@/components/Form.module.scss"
 export default function Home() {
   return (
     <main className={styles.main}>
-      {/* トップページ */}
-      <section className={styles.top}>
-        <img src="/tabedoki.svg" alt="タベドキのロゴ" />
-        <p>あなたの冷蔵庫を賢く管理🥕</p>
-      </section>
-      {/* ログインフォーム */}
       <section className={form.form}>
         <Fridge>
           <h2>ログイン</h2>
