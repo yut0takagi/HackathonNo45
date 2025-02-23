@@ -1,4 +1,3 @@
-import Image from "next/image";
 import styles from "./page.module.scss";
 
 export default function Home() {
@@ -7,9 +6,17 @@ export default function Home() {
       {/* トップページ */}
       <section className={styles.top}>
         <img src="/tabedoki.svg" alt="タベドキのロゴ" />
-        <p>いい感じのキャッチフレーズ</p>
+        <p>あなたの冷蔵庫を賢く管理🥕</p>
       </section>
-      <section>
+      {/* ログインフォーム */}
+      <section className={styles.form}>
+        <h2>ログイン</h2>
+        <form action="/api/login" method="POST">
+          <input type="email" name="email" placeholder="メールアドレス" />
+          <input type="password" name="password" placeholder="パスワード" />
+          <button type="submit">ログイン</button>
+        </form>
+        <p>新規登録は<a href="/register">こちら</a></p>
       </section>
     </main>
   );
