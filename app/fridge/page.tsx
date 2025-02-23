@@ -8,34 +8,34 @@ import styles from "./page.module.scss";
 const ingredients = [
   {
     id: "1",
-    name: "食材1",
+    name: "ブロッコリー",
     icon: "🥦",
     quantity: 3,
-    nearestExpiration: "20日まで",
+    nearestExpiration: "2025/03/20",
     details: [
-      { id: "1-1", expiration: "20日まで", quantity: 1 },
-      { id: "1-2", expiration: "30日まで", quantity: 2 },
+      { id: "1-1", expiration: "2025/03/20", quantity: 1 },
+      { id: "1-2", expiration: "2025/03/30", quantity: 2 },
     ],
   },
   {
     id: "2",
-    name: "食材2",
+    name: "トマト",
     icon: "🍅",
     quantity: 5,
-    nearestExpiration: "15日まで",
+    nearestExpiration: "2025/03/15",
     details: [
-      { id: "2-1", expiration: "15日まで", quantity: 3 },
-      { id: "2-2", expiration: "25日まで", quantity: 2 },
+      { id: "2-1", expiration: "2025/03/15", quantity: 3 },
+      { id: "2-2", expiration: "2025/03/25", quantity: 2 },
     ],
   },
   {
     id: "3",
-    name: "食材3",
+    name: "ニンジン",
     icon: "🥕",
     quantity: 2,
-    nearestExpiration: "10日まで",
+    nearestExpiration: "2025/03/10",
     details: [
-      { id: "3-1", expiration: "10日まで", quantity: 2 },
+      { id: "3-1", expiration: "2025/03/10", quantity: 2 },
     ],
   },
 ];
@@ -101,19 +101,23 @@ export default function Home() {
               onClick={() => toggleDetails(ingredient.id)}
             >
               <div className={styles.ingredientSummary}>
-                <span className={styles.icon}>{ingredient.icon}</span>
-                <span className={styles.name}>{ingredient.name}</span>
-                <span className={styles.quantity}>数量: {ingredient.quantity}</span>
-                <span className={styles.expiration}>
-                  賞味期限: {ingredient.nearestExpiration}
+                <span className={styles.icon}>
+                  {ingredient.icon}
+                  <span className={styles.quantity}>{ingredient.quantity}</span>
                 </span>
+                <div className={styles.details}>
+                  <h2 className={styles.name}>{ingredient.name}</h2>
+                  <span className={styles.expiration}>
+                    一番近い期限: {ingredient.nearestExpiration}
+                  </span>
+                </div>
               </div>
               {/* 詳細表示（タッチ時に展開） */}
               {expandedIds.includes(ingredient.id) && (
                 <div className={styles.ingredientDetails}>
                   {ingredient.details.map((detail) => (
                     <div key={detail.id} className={styles.detailItem}>
-                      <span>賞味期限: {detail.expiration}</span>
+                      <span>期限: {detail.expiration} </span>
                       <span>個数: {detail.quantity}</span>
                     </div>
                   ))}
