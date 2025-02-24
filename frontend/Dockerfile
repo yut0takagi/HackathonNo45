@@ -1,16 +1,20 @@
-# Node.js 20 を使用
-FROM node:20-alpine
+# Node.js 23 を使用
+FROM node:23-alpine
 
+# 作業ディレクトリを設定
 WORKDIR /app
 
-# Next.js のプロジェクトディレクトリをコピー
-COPY my-app/package.json my-app/yarn.lock* my-app/package-lock.json* ./
+# 依存関係のキャッシュを利用するため、package.json だけを先にコピー
+COPY package.json package-lock.json ./
 
 # 依存関係をインストール
-RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else npm install; fi
+RUN npm ci
 
-# Next.js のソースコードをコピー
-COPY my-app ./
+# ソースコードをすべてコピー
+COPY . .
 
-# ホットリロード用に Next.js を開発モードで起動
+# ポートを指定（Next.js の場合）
+EXPOSE 3000
+
+# アプリを実行
 CMD ["npm", "run", "dev"]
