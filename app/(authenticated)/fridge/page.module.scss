@@ -19,7 +19,8 @@
         flex-direction: column;
         gap: 12px;
         transition: transform 0.2s;
-
+        cursor: pointer;
+        
         &.expanded {
             width: 100%;
 
@@ -184,6 +185,8 @@
         flex-direction: column;
         gap: 8px;
         position: relative;
+        // カーソルをポインターに
+        cursor: pointer;
 
         &::before {
             content: "";
