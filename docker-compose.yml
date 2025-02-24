@@ -3,18 +3,17 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ./front  # フロントエンドのソースがあるディレクトリを指定
+      dockerfile: Dockerfile  # `front/` 内の `Dockerfile` を使用
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend/my-app:/app
-      - /app/node_modules  # Next.js のホットリロードを動作させる
-    command: ["npm", "run", "dev"]  # Next.js の開発モードで起動
+      - ./front:/app  # ローカルの `front/` をコンテナの `/app` にマウント
+      - /app/node_modules  # `node_modules` をコンテナ側のみで管理
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000    # ここを設定
-    depends_on:
-      - backend
+      - NODE_ENV=development
+    working_dir: /app
+    command: npm run dev  # 開発環境用のコマンド
 
   backend:
     build:
