@@ -1,31 +1,16 @@
-# 依存関係のインストール用ステージ
-FROM node:18-alpine AS deps
+# Node.js 20 を使用
+FROM node:20-alpine
+
 WORKDIR /app
-# package.json とロックファイルをコピー（npmもしくはyarnに対応）
-COPY package.json yarn.lock* package-lock.json* ./
+
+# Next.js のプロジェクトディレクトリをコピー
+COPY my-app/package.json my-app/yarn.lock* my-app/package-lock.json* ./
+
+# 依存関係をインストール
 RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else npm install; fi
 
-# アプリケーションのビルド用ステージ
-FROM node:18-alpine AS builder
-WORKDIR /app
-# ソースコード全体をコピー
-COPY . .
-# 依存関係を前のステージからコピー
-COPY --from=deps /app/node_modules ./node_modules
-# Next.jsアプリのビルド（yarn or npm）
-RUN if [ -f yarn.lock ]; then yarn build; else npm run build; fi
+# Next.js のソースコードをコピー
+COPY my-app ./
 
-# プロダクション用実行環境のステージ
-FROM node:18-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-EXPOSE 3000
-# 必要なファイルのみコピー
-# COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=deps /app/node_modules ./node_modules
-# package.json のコピーを追加
-COPY --from=deps /app/package.json ./
-# Next.jsアプリの起動
-CMD ["yarn", "start"]
+# ホットリロード用に Next.js を開発モードで起動
+CMD ["npm", "run", "dev"]

@@ -6,7 +6,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # 必要に応じてポート番号を変更
+      - "3000:3000"
+    volumes:
+      - ./frontend/my-app:/app
+      - /app/node_modules  # Next.js のホットリロードを動作させる
+    command: ["npm", "run", "dev"]  # Next.js の開発モードで起動
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000  # ここを設定
     depends_on:
       - backend
 
@@ -15,7 +21,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"  # FastAPIのデフォルトポート
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]  # FastAPI のホットリロードを有効化
     depends_on:
       - db
     environment:
