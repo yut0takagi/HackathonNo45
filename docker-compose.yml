@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./front  # フロントエンドのソースがあるディレクトリを指定
+      context: ./frontend  # フロントエンドのソースがあるディレクトリを指定
       dockerfile: Dockerfile  # `front/` 内の `Dockerfile` を使用
     ports:
       - "3000:3000"
