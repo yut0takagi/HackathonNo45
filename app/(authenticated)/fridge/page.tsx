@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Fridge from "@/components/Fridge";
 import styles from "./page.module.scss";
 
@@ -7,37 +7,41 @@ import styles from "./page.module.scss";
 const ingredients = [
   {
     id: "1",
-    name: "食材1",
+    name: "ブロッコリー",
+    genre: "野菜",
     icon: "🥦",
     quantity: 3,
-    nearestExpiration: "20日まで",
+    nearestExpiration: "2025/03/20",
     details: [
-      { id: "1-1", expiration: "20日まで", quantity: 1 },
-      { id: "1-2", expiration: "30日まで", quantity: 2 },
+      { id: "1-1", expiration: "2025/03/20", quantity: 1 },
+      { id: "1-2", expiration: "2025/03/30", quantity: 2 },
     ],
   },
   {
     id: "2",
-    name: "食材2",
+    name: "トマト",
+    genre: "野菜",
     icon: "🍅",
     quantity: 5,
-    nearestExpiration: "15日まで",
+    nearestExpiration: "2025/03/15",
     details: [
-      { id: "2-1", expiration: "15日まで", quantity: 3 },
-      { id: "2-2", expiration: "25日まで", quantity: 2 },
+      { id: "2-1", expiration: "2025/03/15", quantity: 3 },
+      { id: "2-2", expiration: "2025/03/25", quantity: 2 },
     ],
   },
   {
     id: "3",
-    name: "食材3",
+    name: "ニンジン",
+    genre: "野菜",
     icon: "🥕",
     quantity: 2,
-    nearestExpiration: "10日まで",
+    nearestExpiration: "2025/03/10",
     details: [
-      { id: "3-1", expiration: "10日まで", quantity: 2 },
+      { id: "3-1", expiration: "2025/03/10", quantity: 2 },
     ],
   },
 ];
+
 
 export default function Home() {
   // フィルター用の文字列
@@ -46,6 +50,8 @@ export default function Home() {
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   // ソート順（true: 昇順、false: 降順）
   const [sortAscending, setSortAscending] = useState(true);
+  // 表示形式（リスト形式かアイテム形式か）
+  const [displayMode, setDisplayMode] = useState(true);
 
   // フィルターおよびソート処理
   const filteredIngredients = ingredients.filter((ingredient) =>
@@ -69,6 +75,33 @@ export default function Home() {
     setSortAscending((prev) => !prev);
   };
 
+  // ポップアップの開閉
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // 枠外クリックで閉じる処理
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current !== event.target // ← ボタンのクリックは無視！
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
+
   return (
     <>
       <main className={styles.main}>
@@ -89,6 +122,13 @@ export default function Home() {
           <button onClick={toggleSort} className={styles.sortButton}>
             {sortAscending ? "▲" : "▼"}
           </button>
+          {/* リストの表示形式（クリックで切替） */}
+          <button
+            onClick={() => setDisplayMode(!displayMode)}
+            className={styles.displayButton}
+          >
+            {displayMode ? "アイテム" : "リスト"}
+          </button>
         </div>
 
         {/* リスト一覧 */}
@@ -96,23 +136,33 @@ export default function Home() {
           {sortedIngredients.map((ingredient) => (
             <li
               key={ingredient.id}
-              className={styles.ingredientItem}
+              className={`
+                ${styles.ingredientItem}
+                ${(displayMode || expandedIds.includes(ingredient.id)) ? styles.expanded : ""}
+                `}
               onClick={() => toggleDetails(ingredient.id)}
             >
               <div className={styles.ingredientSummary}>
-                <span className={styles.icon}>{ingredient.icon}</span>
-                <span className={styles.name}>{ingredient.name}</span>
-                <span className={styles.quantity}>数量: {ingredient.quantity}</span>
-                <span className={styles.expiration}>
-                  賞味期限: {ingredient.nearestExpiration}
+                <span className={styles.icon}>
+                  {ingredient.icon}
+                  <span className={styles.quantity}>{ingredient.quantity}</span>
                 </span>
+                {/* リストの場合のみ表示 */}
+                {(displayMode || expandedIds.includes(ingredient.id)) && (
+                  <div className={styles.details}>
+                    <h2 className={styles.name}>{ingredient.name}<span>#{ingredient.genre}</span></h2>
+                    <span className={styles.expiration}>
+                      一番近い期限: {ingredient.nearestExpiration}
+                    </span>
+                  </div>
+                )}
               </div>
               {/* 詳細表示（タッチ時に展開） */}
               {expandedIds.includes(ingredient.id) && (
                 <div className={styles.ingredientDetails}>
                   {ingredient.details.map((detail) => (
                     <div key={detail.id} className={styles.detailItem}>
-                      <span>賞味期限: {detail.expiration}</span>
+                      <span>期限: {detail.expiration} </span>
                       <span>個数: {detail.quantity}</span>
                     </div>
                   ))}
@@ -121,6 +171,29 @@ export default function Home() {
             </li>
           ))}
         </ul>
+
+        <div className={styles.bottomLine}>
+          {/* 右下のボタン（＋ → ー 切り替え） */}
+          <button
+            ref={buttonRef} // ボタンを独立させる
+            className={`${styles.addButton} ${menuOpen ? styles.open : ""}`}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? "－" : "＋"}
+          </button>
+
+          {/* ポップアップメニュー */}
+          <div ref={menuRef} className={`${styles.menuWrapper} ${menuOpen ? styles.show : ""}`}>
+            <div className={styles.menu}>
+              <button onClick={() => alert("食材を登録")} className={styles.menuItem}>
+                🍽️ 食材を登録
+              </button>
+              <button onClick={() => alert("使った食材を記録")} className={styles.menuItem}>
+                ✍️ 使った食材を記録
+              </button>
+            </div>
+          </div>
+        </div>
       </main>
     </>
   );
