@@ -12,7 +12,7 @@ services:
       - /app/node_modules  # Next.js のホットリロードを動作させる
     command: ["npm", "run", "dev"]  # Next.js の開発モードで起動
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000  # ここを設定
+      - NEXT_PUBLIC_API_URL=http://localhost:8000    # ここを設定
     depends_on:
       - backend
 
@@ -39,3 +39,5 @@ services:
       POSTGRES_DB: mydatabase
     ports:
       - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

@@ -4,11 +4,10 @@ import { useState, useEffect } from "react";
 import { auth } from "@/firebase/config";
 import { loginWithGoogle, logout } from "@/firebase/auth";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
+  const [usersList, setUsersList] = useState<any[]>([]);
 
   useEffect(() => {
     // 認証状態を監視
@@ -18,11 +17,35 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = async () => {
-    const loggedInUser = await loginWithGoogle();
-    if (loggedInUser) {
-      router.push("/dashboard"); // 認証後にダッシュボードへ遷移
+  // ユーザーがログインしている場合、バックエンドの API を呼び出してユーザー一覧を取得する
+  useEffect(() => {
+    if (user) {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch("http://localhost:8000/users/", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("ユーザー一覧の取得に失敗しました");
+          }
+          const data = await response.json();
+          setUsersList(data);
+        } catch (error) {
+          console.error("ユーザー一覧取得エラー:", error);
+        }
+      };
+      fetchUsers();
+    } else {
+      // ログアウト時はユーザー一覧をクリア
+      setUsersList([]);
     }
+  }, [user]);
+
+  const handleLogin = async () => {
+    await loginWithGoogle();
   };
 
   return (
@@ -37,6 +60,20 @@ export default function Home() {
           >
             Logout
           </button>
+          <div className="mt-6">
+            <h2 className="text-xl font-bold mb-2">Users List</h2>
+            {usersList.length > 0 ? (
+              <ul>
+                {usersList.map((u, index) => (
+                  <li key={index}>
+                    {u.displayName || u.name || "Unnamed User"} - {u.email}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No users found.</p>
+            )}
+          </div>
         </>
       ) : (
         <button
