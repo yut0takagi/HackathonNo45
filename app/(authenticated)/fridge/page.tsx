@@ -50,6 +50,8 @@ export default function Home() {
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   // ソート順（true: 昇順、false: 降順）
   const [sortAscending, setSortAscending] = useState(true);
+  // 表示形式（リスト形式かアイテム形式か）
+  const [displayMode, setDisplayMode] = useState(true);
 
   // フィルターおよびソート処理
   const filteredIngredients = ingredients.filter((ingredient) =>
@@ -120,6 +122,13 @@ export default function Home() {
           <button onClick={toggleSort} className={styles.sortButton}>
             {sortAscending ? "▲" : "▼"}
           </button>
+          {/* リストの表示形式（クリックで切替） */}
+          <button
+            onClick={() => setDisplayMode(!displayMode)}
+            className={styles.displayButton}
+          >
+            {displayMode ? "アイテム" : "リスト"}
+          </button>
         </div>
 
         {/* リスト一覧 */}
@@ -127,7 +136,10 @@ export default function Home() {
           {sortedIngredients.map((ingredient) => (
             <li
               key={ingredient.id}
-              className={styles.ingredientItem}
+              className={`
+                ${styles.ingredientItem}
+                ${(displayMode || expandedIds.includes(ingredient.id)) ? styles.expanded : ""}
+                `}
               onClick={() => toggleDetails(ingredient.id)}
             >
               <div className={styles.ingredientSummary}>
@@ -135,12 +147,15 @@ export default function Home() {
                   {ingredient.icon}
                   <span className={styles.quantity}>{ingredient.quantity}</span>
                 </span>
-                <div className={styles.details}>
-                  <h2 className={styles.name}>{ingredient.name}<span>#{ingredient.genre}</span></h2>
-                  <span className={styles.expiration}>
-                    一番近い期限: {ingredient.nearestExpiration}
-                  </span>
-                </div>
+                {/* リストの場合のみ表示 */}
+                {(displayMode || expandedIds.includes(ingredient.id)) && (
+                  <div className={styles.details}>
+                    <h2 className={styles.name}>{ingredient.name}<span>#{ingredient.genre}</span></h2>
+                    <span className={styles.expiration}>
+                      一番近い期限: {ingredient.nearestExpiration}
+                    </span>
+                  </div>
+                )}
               </div>
               {/* 詳細表示（タッチ時に展開） */}
               {expandedIds.includes(ingredient.id) && (
