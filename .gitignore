@@ -32,3 +32,5 @@ next-env.d.ts
 
 # api key
 frontend/app/(auth)/lib/firebaseConfig.ts
+
+.DS_Store
