@@ -31,3 +31,4 @@ backend/__pycache__
 next-env.d.ts
 
 
+.DS_Store

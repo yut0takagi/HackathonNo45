@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build:
@@ -8,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./front:/app  # ローカルの `front/` をコンテナの `/app` にマウント
+      - ./frontend:/app  # ローカルの `front/` をコンテナの `/app` にマウント
       - /app/node_modules  # `node_modules` をコンテナ側のみで管理
     environment:
       - NODE_ENV=development

@@ -1,5 +1,5 @@
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, HTTPException, File, UploadFile
+from fastapi import FastAPI, HTTPException, File, UploadFile, Request
 import shutil
 from pydantic import BaseModel
 import psycopg2
@@ -45,6 +45,14 @@ class User(BaseModel):
 
 class ImageRequest(BaseModel):
     image_base64: str
+
+class Refrigerator(BaseModel):
+    uid: str
+    name: str
+    genre: str
+    icon: str
+    quantity: int
+    Expiration: str
 
 app.add_middleware(
     CORSMiddleware,
@@ -197,3 +205,39 @@ def json_string_to_dict(json_string: str):
     except json.JSONDecodeError as e:
         print(f"JSONのデコードに失敗しました: {e}")
         return None
+
+# データをデータベースに保存
+@app.post("/savedata/")
+async def save_data_from_frontend_to_db(request: Request):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # フロントエンドからのJSONデータを取得
+        data = await request.json()  # ← await を追加
+
+        # 冷蔵庫データをデータベースに保存
+        for item in data["items"]:
+            query = """
+                INSERT INTO refrigerator 
+                (uid, name, genre, icon, quantity, expiration)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            cur.execute(query, (
+                item["uid"],
+                item["name"], 
+                item["genre"],
+                item["icon"],
+                item["quantity"],
+                item["nearestExpiration"]
+            ))
+
+        conn.commit()
+        return {"message": "Data saved successfully!"}
+    
+    except Exception as e:
+        conn.rollback()
+        return {"error": str(e)}
+    
+    finally:
+        cur.close()
+        conn.close()
