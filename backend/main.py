@@ -39,6 +39,7 @@ def get_db_connection():
 #     uid: str
 #     data: str
 
+
 class User(BaseModel):
     uid: str
     display_name: Optional[str] = None
@@ -54,6 +55,7 @@ class Refrigerator(BaseModel):
     icon: str
     quantity: int
     Expiration: str
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -127,7 +129,7 @@ def get_users():
                 "uid": row[0],
                 "display_name": row[1],
                 "email": row[2],
-                "created_at": row[3]
+                "created_at": row[3],
             }
             for row in rows
         ]
@@ -138,6 +140,61 @@ def get_users():
         cur.close()
         conn.close()
 
+
+# --- 新たなエンドポイント: /menu/{uid} --- #
+@app.get("/menu/{uid}")
+def get_menu(uid: str):
+    # DBから冷蔵庫内の食材データを取得
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # テーブル 'fridge_contents' の 'ingredient' カラムから食材データを取得する例
+        query = "SELECT ingredient FROM fridge_contents WHERE uid = %s;"
+        cur.execute(query, (uid,))
+        rows = cur.fetchall()
+        ingredients = [row[0] for row in rows]
+        if not ingredients:
+            raise HTTPException(
+                status_code=404,
+                detail="指定されたUIDの食材データが見つかりませんでした。",
+            )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
+
+    # 固定のJSON出力フォーマットを指定したプロンプトを作成
+    prompt = (
+        "以下の食材リストを使用して、一人暮らしでも簡単に作れる料理のメニューを3つ提案してください。\n"
+        "出力は以下のJSONフォーマットに厳密に従い、他の余計なテキストを一切含めないこと。\n\n"
+        "【JSONフォーマット】\n"
+        "{\n"
+        '  "menus": [\n'
+        "    {\n"
+        '      "name": "料理名",\n'
+        '      "ingredients": ["食材1", "食材2", ...],\n'
+        '      "instructions": "作り方の手順"\n'
+        "    },\n"
+        "    ...\n"
+        "  ]\n"
+        "}\n\n"
+        f"食材リスト: {', '.join(ingredients)}"
+    )
+
+    # OpenAI API を呼び出してメニュー提案を取得
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+        )
+        generated_text = response.choices[0].message.content.strip()
+        # 返却されたテキストが指定のJSON形式であることを前提としてパース
+        menu_json = json.loads(generated_text)
+        return menu_json
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 # 画像認識
 @app.post("/images/")
 async def get_image_data(image_request: ImageRequest):
