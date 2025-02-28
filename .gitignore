@@ -30,4 +30,6 @@ backend/__pycache__/*
 *.tsbuildinfo
 next-env.d.ts
 
+# api key
 
+.DS_Store
