@@ -15,18 +15,24 @@ const Footer = () => {
     // ログインユーザーの情報を取得
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            console.log("Auth state changed:", currentUser); // 🔍 デバッグ用
             setUser(currentUser);
         });
-
-        return () => unsubscribe(); // コンポーネントのアンマウント時にリスナーを解除
+    
+        return () => unsubscribe();
     }, []);
+    
 
     const doLogout = async (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
-        await signOut(auth);
-        alert("ログアウト完了！");
-        setUser(null);
-        router.push("/login");
+
+        try{
+            await signOut(auth);
+            setUser(null);
+            router.push("/login");
+        } catch (error) {
+            console.error("ログアウトエラー:", error);
+        }
     };
     
       
@@ -63,7 +69,7 @@ const Footer = () => {
                         </li>
                         {/* 🔹 ここにログイン情報を追加 */}
                         {user && (
-                            <li className={styles.navItem} style={{ marginLeft: "auto" }}>
+                            <li className={styles.navItem} style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
                                 <div className={styles.userInfo}>
                                     <p>{user.displayName || user.email}</p>
                                     <Link href="/login" className={styles.logoutButton} onClick={doLogout}>
