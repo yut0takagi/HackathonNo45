@@ -16,6 +16,51 @@ export default function Home() {
   const [password, setPassword] = useState<string>("");
   const router = useRouter(); // ✅ useRouter を使用
 
+
+  const saveUserToDB = async (uid: string, displayName: string | null, email: string | null) => {
+    try {
+      const requestBody = { uid, display_name: displayName, email };
+  
+      console.log("Sending request with body:", requestBody); // 🔍 送信データをログ出力
+  
+      const response = await fetch("http://localhost:8000/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+  
+      console.log("HTTP Response:", response); // 🔍 HTTP レスポンスの詳細をログ出力
+  
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        let errorMessage = "不明なエラー";
+  
+        if (contentType && contentType.includes("application/json")) {
+          const errorData = await response.json();
+          console.log("Server Error Data:", errorData); // 🔍 サーバーエラーをログ出力
+          errorMessage = errorData.message || errorMessage;
+        } else {
+          errorMessage = await response.text();
+          console.log("Server Error Text:", errorMessage); // 🔍 JSON 以外のエラー
+        }
+  
+        throw new Error(`ユーザー情報の保存に失敗しました: ${errorMessage}`);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("DB 保存エラー:", error.message);
+      } else {
+        console.error("DB 保存エラー: 不明なエラー", error);
+      }
+    }
+  };
+  
+  
+
+  
+
   const doRegister = async (): Promise<void> => {
     if (!email || !password) {
       alert("メールアドレスとパスワードを入力してください");
@@ -24,6 +69,9 @@ export default function Home() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      await saveUserToDB(user.uid, user.displayName, user.email);
+
       alert("登録完了！");
       console.log(userCredential.user);
 
