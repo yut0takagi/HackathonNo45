@@ -10,7 +10,7 @@
 /frontend/.pnpm-debug.log*
 
 # backend
-backend/__pycache__
+backend/__pycache__/*
 *.pyc
 
 # testing
