@@ -6,7 +6,7 @@ import form from "@/components/Form.module.scss";
 import Fridge from "@/components/Fridge";
 import { useRouter } from "next/navigation";
 
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState } from "react";
 // import { auth } from "../lib/firebaseConfig"; // ✅ 修正: 正しいパスに変更
 import { auth } from '../lib/FirebaseConfig';
@@ -71,6 +71,7 @@ export default function Home() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       await saveUserToDB(user.uid, user.displayName, user.email);
+      await signOut(auth);
 
       alert("登録完了！");
       console.log(userCredential.user);
@@ -79,8 +80,12 @@ export default function Home() {
 
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("登録エラー:", error.message);
-        alert("エラー: " + error.message);
+        if ((error as any).code === "auth/email-already-in-use") {
+            alert("このメールアドレスはすでに登録されています。別のメールアドレスを使用してください。");
+        } else {
+            console.error("登録エラー:", error.message);
+            alert("エラー: " + error.message);
+        }
       }
     }
   };

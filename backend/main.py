@@ -82,21 +82,37 @@ app.add_middleware(
 #         cur.close()
 #         conn.close()
 
-# @app.get("/user_data/{uid}")
-# def get_user_data(uid: str):
-#     conn = get_db_connection()
-#     cur = conn.cursor()
-#     try:
-#         query = "SELECT id, data, created_at FROM user_data WHERE uid = %s;"
-#         cur.execute(query, (uid,))
-#         rows = cur.fetchall()
-#         data = [{"id": row[0], "data": row[1], "created_at": row[2]} for row in rows]
-#         return {"uid": uid, "data": data}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-#     finally:
-#         cur.close()
-#         conn.close()
+@app.get("/fridge_data/{uid}")
+def get_fridge_data(uid: str):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        query = """
+            SELECT ingredient_id, name, genre, icon, quantity, expiration
+            FROM fridge WHERE uid = %s;
+        """
+        cur.execute(query, (uid,))
+        rows = cur.fetchall()
+
+        # データを辞書のリストに変換
+        data = [
+            {
+                "id": row[0],
+                "name": row[1],
+                "genre": row[2],
+                "icon": row[3],
+                "quantity": row[4],
+                "nearestExpiration": row[5]
+            }
+            for row in rows
+        ]
+
+        return {"data": data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+        conn.close()
 
 
 @app.post("/users/")
@@ -195,6 +211,8 @@ def get_menu(uid: str):
         return menu_json
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
 # 画像認識
 @app.post("/images/")
 async def get_image_data(image_request: ImageRequest):
@@ -276,7 +294,7 @@ async def save_data_from_frontend_to_db(request: Request):
         # 冷蔵庫データをデータベースに保存
         for item in data["items"]:
             query = """
-                INSERT INTO refrigerator 
+                INSERT INTO fridge 
                 (uid, name, genre, icon, quantity, expiration)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """

@@ -15,18 +15,24 @@ const Footer = () => {
     // ログインユーザーの情報を取得
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            console.log("Auth state changed:", currentUser); // 🔍 デバッグ用
             setUser(currentUser);
         });
-
-        return () => unsubscribe(); // コンポーネントのアンマウント時にリスナーを解除
+    
+        return () => unsubscribe();
     }, []);
+    
 
     const doLogout = async (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
-        await signOut(auth);
-        alert("ログアウト完了！");
-        setUser(null);
-        router.push("/login");
+
+        try{
+            await signOut(auth);
+            setUser(null);
+            router.push("/login");
+        } catch (error) {
+            console.error("ログアウトエラー:", error);
+        }
     };
     
       
@@ -37,6 +43,14 @@ const Footer = () => {
             <footer className={styles.footer}>
                 <nav>
                     <ul className={styles.navList}>
+                        <li className={styles.navItem}>
+                            <Link href="/picture" className={styles.navButton}>
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 9.77746V16.2C5 17.8802 5 18.7203 5.32698 19.362C5.6146 19.9265 6.07354 20.3854 6.63803 20.673C7.27976 21 8.11984 21 9.8 21H14.2C15.8802 21 16.7202 21 17.362 20.673C17.9265 20.3854 18.3854 19.9265 18.673 19.362C19 18.7203 19 17.8802 19 16.2V5.00002M21 12L15.5668 5.96399C14.3311 4.59122 13.7133 3.90484 12.9856 3.65144C12.3466 3.42888 11.651 3.42893 11.0119 3.65159C10.2843 3.90509 9.66661 4.59157 8.43114 5.96452L3 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                                </svg>
+                                <p>写真撮影</p>
+                            </Link>
+                        </li>
                         <li className={styles.navItem}>
                             <Link href="/fridge" className={styles.navButton}>
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +77,7 @@ const Footer = () => {
                         </li>
                         {/* 🔹 ここにログイン情報を追加 */}
                         {user && (
-                            <li className={styles.navItem} style={{ marginLeft: "auto" }}>
+                            <li className={styles.navItem} style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
                                 <div className={styles.userInfo}>
                                     <p>{user.displayName || user.email}</p>
                                     <Link href="/login" className={styles.logoutButton} onClick={doLogout}>
