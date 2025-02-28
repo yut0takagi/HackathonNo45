@@ -2,48 +2,65 @@
 import { useState, useRef, useEffect } from "react";
 import Fridge from "@/components/Fridge";
 import styles from "./page.module.scss";
+import { auth } from "../../(auth)/lib/FirebaseConfig";
 
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 // サンプルの食材データ
-const ingredients = [
-  {
-    id: "1",
-    name: "ブロッコリー",
-    genre: "野菜",
-    icon: "🥦",
-    quantity: 3,
-    nearestExpiration: "2025/03/20",
-    details: [
-      { id: "1-1", expiration: "2025/03/20", quantity: 1 },
-      { id: "1-2", expiration: "2025/03/30", quantity: 2 },
-    ],
-  },
-  {
-    id: "2",
-    name: "トマト",
-    genre: "野菜",
-    icon: "🍅",
-    quantity: 5,
-    nearestExpiration: "2025/03/15",
-    details: [
-      { id: "2-1", expiration: "2025/03/15", quantity: 3 },
-      { id: "2-2", expiration: "2025/03/25", quantity: 2 },
-    ],
-  },
-  {
-    id: "3",
-    name: "ニンジン",
-    genre: "野菜",
-    icon: "🥕",
-    quantity: 2,
-    nearestExpiration: "2025/03/10",
-    details: [
-      { id: "3-1", expiration: "2025/03/10", quantity: 2 },
-    ],
-  },
-];
+// 
 
+interface Ingredient {
+  id: string;
+  name: string;
+  genre: string;
+  icon: string;
+  quantity: number;
+  nearestExpiration: string;
+}
+
+// APIからデータを取得
 
 export default function Home() {
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        fetchData(currentUser.uid); // 🔥 ログインユーザーのUIDを使ってデータ取得
+      } else {
+        setUser(null);
+        setIngredients([]); // 未ログインならデータをリセット
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
+  const fetchData = async (uid: string) => {
+    try {
+      const response = await fetch(`http://localhost:8000/fridge_data/${uid}`);
+      if (!response.ok) throw new Error("データの取得に失敗しました");
+
+      const data = await response.json();
+      if (data.data && Array.isArray(data.data)) {
+        const transformedIngredients: Ingredient[] = data.data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          genre: item.genre,
+          icon: item.icon || "❓", // デフォルトアイコン
+          quantity: item.quantity,
+          nearestExpiration: item.nearestExpiration,
+        }));
+
+        setIngredients(transformedIngredients);
+      }
+    } catch (error) {
+      console.error("データ取得エラー:", error);
+    }
+  };
+
   // フィルター用の文字列
   const [filter, setFilter] = useState("");
   // 詳細表示中の食材IDリスト
@@ -157,17 +174,6 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              {/* 詳細表示（タッチ時に展開） */}
-              {expandedIds.includes(ingredient.id) && (
-                <div className={styles.ingredientDetails}>
-                  {ingredient.details.map((detail) => (
-                    <div key={detail.id} className={styles.detailItem}>
-                      <span>期限: {detail.expiration} </span>
-                      <span>個数: {detail.quantity}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </li>
           ))}
         </ul>
